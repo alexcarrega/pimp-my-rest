@@ -1,0 +1,28 @@
+# Copyright (c) 2020 Alex Carrega <contact@alexcarrega.com>
+# author: Alex Carrega <contact@alexcarrega.com>
+
+console:
+  level: DEBUG
+  format: "%(message)s"
+
+file:
+  level: DEBUG
+  # cspell:disable
+  format: "[%(asctime)s] %(levelname)-8s %(calledfilename)s@%(calledfunction)s:%(calledlineno)05d %(message)s"
+  # cspell:enable
+  path: logs
+  when: midnight
+  interval: 1
+
+net:
+  level: INFO
+  # cspell:disable
+  format: "[%(asctime)s] %(levelname)-8s %(calledfilename)s@%(calledfunction)s:%(calledlineno)05d %(message)s"
+  # cspell:enable
+  host: 0.0.0.0
+  port: 8765
+
+logger:
+  __default__: DEBUG
+  service: INFO
+  test: DEBUG

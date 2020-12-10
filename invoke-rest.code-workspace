@@ -1,0 +1,30 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"cSpell.words": [
+			"Carrega",
+			"Fira",
+			"Multipass",
+			"Unmount",
+			"calledlineno",
+			"cmds",
+			"ebpf",
+			"gitlab",
+			"hndl",
+			"kube",
+			"vrbs",
+			"xargs"
+		],
+		"editor.fontFamily": "Fira Code Retina",
+		"editor.tabCompletion": "on",
+		"editor.wordWrap": "on",
+		"editor.wrappingIndent": "deepIndent",
+		"files.insertFinalNewline": true,
+		"workbench.colorTheme": "Atom One Dark",
+		"workbench.editor.tabSizing": "shrink",
+	}
+}

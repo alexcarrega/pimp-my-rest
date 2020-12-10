@@ -1,0 +1,6 @@
+name = 'invoke-rest'
+version = '1.0.0'
+author = 'Alex Carrega'
+author_email = 'contact@alexcarrega.com'
+description=''
+url = 'https://github.com/alexcarrega/invoke-rest'
