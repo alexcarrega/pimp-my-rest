@@ -4,4 +4,9 @@
 ☐ not in where clause @high
 ☐ src directory with setup.py @low
 ☐ pip upload @low
-☐ github repository @low
+github repository:
+    ☐ description, website, or topics @low
+☐ description in about
+☐ README.md
+☐ docs
+☐ comments
