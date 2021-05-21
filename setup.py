@@ -7,7 +7,7 @@ from os import path
 from rich.console import Console
 from setuptools import setup
 # Local
-from src.settings import about, theme, icons
+from src.data import about, theme, icons
 
 console = Console(theme=theme)
 requirements_file = 'requirements.txt'

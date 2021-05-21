@@ -1,108 +1,55 @@
-#!/usr/bin/env python
 # Copyright (c) 2020 Alex Carrega <contact@alexcarrega.com>
 # author: Alex Carrega <contact@alexcarrega.com>
 
-# General
-from dynaconf import settings
+from functools import partial
 from inspect import FrameInfo, stack
-from logging import Formatter as DefaultFormatter, LogRecord, Logger
 from os import path
-from re import sub
-from loguru import logger
-from rich.traceback import install as traceback_install
-from sys import stderr, stdout
-# Locals
-from src import settings
 
+# General
+from bunch import Bunch
+from dynaconf import Dynaconf
+from emoji import emojize
+from loguru import logger as loguru
+from rich.traceback import install as traceback_install
+
+from data import about
 
 traceback_install(show_locals=False)
+emoji = partial(emojize, use_aliases=True)
 
 
-class Formatter(DefaultFormatter):
+class Formatter:
     @staticmethod
     def info(name: str) -> FrameInfo:
-        for _s in stack():
-            if name in _s.filename.replace('_', '-'):
-                return _s
+        for s in stack():
+            if name.replace('_', '') in s.filename.replace('_', '-'):
+                return s
 
-    def format(self, record: LogRecord) -> str:
-        _s = self.info(record.name)
-        record.calledfilename = path.basename(_s.filename)
-        record.calledfunction = _s.function
-        record.calledlineno = _s.lineno
-        record.levelstyle = record.levelname.lower()
-        record.levelicon = settings.icons.get(record.levelstyle)
-        return DefaultFormatter.format(self, record)
-
-
-class NoStyleFormatter(Formatter):
-    def format(self, record: LogRecord) -> str:
-        _out = DefaultFormatter.format(self, record)
-        _out = sub(r'\[[^\]]*\]([^\]]*)\[\/[^\]]*\]', r'\1', _out)
-        _out = sub(r':[A-Za-z-_]*:[ ]{0,1}', '', _out)
-        return _out
+    @classmethod
+    def apply(cls, record) -> str:
+        s = cls.info(record['name'])
+        record['called'] = Bunch(filename=path.basename(s.filename), function=s.function,
+                                 lineno=s.lineno, icon=emoji(':computer:'))
+        record['elapsed'] = Bunch(time=record['elapsed'], icon=emoji(':alarm_clock:'))
+        record['message'] = emoji(record['message'])
 
 
-def logger(name: str) -> Logger:
-    _l = settings.log
+class Log:
+    __instance = None
 
-    logger.add(stdout, colorize=True, **_l.console)
-    logger.add(f'{_l.file.path}/{name}.log', **_l.file)
-
-    def __response(r, ok, error, force={'ok': False, 'error': False, 'exit': True}):
-        _stdout = r.stdout.strip()
-        _stderr = r.stderr.strip()
-        if r.ok:
-            if _stderr and not force.get('ok', False):
-                for l in _stderr.splitlines():
-                    logger.warning(l)
-            elif _stdout and not force.get('ok', False):
-                for l in _stdout.splitlines():
-                    logger.success(l)
-            else:
-                logger.info(ok)
-        else:
-            if _stderr and not force.get('error', False):
-                for l in _stderr.strip().splitlines():
-                    logger.error(l)
-            elif _stdout and not force.get('error', False):
-                for l in _stdout.strip().splitlines():
-                    logger.error(l)
-            else:
-                logger.error(error)
-            logger.warning(f':{settings.icons.exit}: [warning]Exit[/warning] ' +
-                           f':{settings.icons.code}: code: [hl]{r.exited}[/hl]')
-        if force.get('exit', True):
-            exit(r.exited)
-        else:
-            return r.exited
-    logger.response = __response
-
-    logger.setLevel(_l.logger.get(name, _l.logger.__default__))
-
-    return logger
+    @classmethod
+    def get(cls, name: str = about.name):
+        if cls.__instance is None:
+            cfg = Dynaconf(settings_files=["log.yaml"])
+            logger = loguru.bind(context=name)
+            hdls = []
+            for _k, _v in cfg.sinks.items():
+                if _v.get('enabled', True):
+                    _h = dict(sink=_v.klass.format(name=name), **_v.args)
+                    hdls.append(_h)
+            logger.configure(handlers=hdls, patcher=Formatter.apply)
+            cls.__instance = logger.opt(colors=True)
+        return cls.__instance
 
 
-class DisableHandler:
-    def __init__(self, log: Logger, index: str):
-        self.log = log
-        self.index = index
-
-    def __enter__(self):
-        self.hndl = self.log.handlers[self.index]
-        del self.log.handlers[self.index]
-
-    def __exit__(self, exit_type, exit_value, exit_traceback):
-        self.log.handlers.append(self.hndl)
-
-
-class Section:
-    def __init__(self, log: Logger, title: str):
-        self.console = log.console
-        self.title = title
-
-    def __enter__(self):
-        self.console.rule(self.title)
-
-    def __exit__(self, exit_type, exit_value, exit_traceback):
-        self.console.print()
+log = Log.get()

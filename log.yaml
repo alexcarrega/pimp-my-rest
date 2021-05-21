@@ -1,0 +1,35 @@
+sinks:
+  console:
+    klass: stdout
+    enabled: false
+    args:
+      level: "DEBUG"
+      # cspell:disable
+      format: "{level.icon:>2} <level>{level.name:<8}</level> {message}"
+      # cspell:enable
+      backtrace: true
+      diagnose: True
+
+  file:
+    klass: "log/{name}.log"
+    args:
+      level: "DEBUG"
+      # cspell:disable
+      format: "{time:YYYY-MM-DD at HH:mm:ss} {level.icon:>2} {level.name:<8} {message:<100} {called.icon} {called.filename}@{called.function}:{called.lineno} {elapsed.icon} {elapsed.time}"# cspell:enable
+      rotation: "00:00"
+      retention: "10 days"
+      compression: "zip"
+
+  net:
+    klass: "StreamHandler"
+    enabled: false
+    args:
+      level: "INFO"
+      # cspell:disable
+      format: "{time:YYYY-MM-DD at HH:mm:ss} {level.icon:>2} {level.name:<8} {message:<100} {called.icon} {called.filename}@{called.function}:{called.lineno} {elapsed.icon} {elapsed.time}"
+      # cspell:enable
+      host: "0.0.0.0"
+      port: 8765
+
+logger:
+  __default__: "DEBUG"

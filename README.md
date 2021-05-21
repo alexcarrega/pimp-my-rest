@@ -1,4 +1,4 @@
-# Pymp My REST
+# Pimp My REST
 
 [![License](https://img.shields.io/github/license/alexcarrega/pimp-my-rest)](https://github.com/alexcarrega/pimp-my-rest/blob/master/LICENSE)
 [![Code size](https://img.shields.io/github/languages/code-size/alexcarrega/pimp-my-rest?color=red&logo=github)](https://github.com/alexcarrega/pimp-my-rest)

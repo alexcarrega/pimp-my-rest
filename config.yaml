@@ -1,0 +1,151 @@
+# Copyright (c) 2020 Alex Carrega <contact@alexcarrega.com>
+# author: "alex Carrega <contact@alexcarrega.com>
+
+style:
+  description: "yellow"
+  hostname: "yellow"
+  name: "yellow"
+  partner: "yellow"
+  username: "yellow"
+  password: "red"
+  port: "cyan"
+  stage: "green"
+  started: "green"
+  last_heartbeat: "green"
+  id: "blue"
+  status: "blue"
+  type_id: "purple"
+  exec_env_id: "purple"
+  network_link_id: "purple"
+  agent_catalog_id: "purple"
+  ebpf_program_catalog_id: "purple"
+  agent_instance_id: "purple"
+  ebpf_program_instance_id: "purple"
+  cmd: "yellow"
+  code: "cyan"
+  message: "yellow"
+  expr: "yellow"
+  target: "blue"
+  enabled:
+    "True": "green"
+    "False": "red"
+  daemon:
+    "True": "green"
+    "False": "red"
+  error:
+    "True": "red"
+    "False": "green"
+
+icon:
+  id: "id"
+  type_id: "id"
+  exec_env_id: "id"
+  network_link_id: "id"
+  agent_catalog_id: "id"
+  ebpf_program_catalog_id: "id"
+  agent_instance_id: "id"
+  ebpf_program_instance_id: "id"
+  hostname: "computer"
+  lcp: "package"
+  partner: "copyright"
+  stage: "ribbon"
+  password: "secret"
+  username: "man"
+  last_heartbeat: "date"
+  started: "date"
+  port: 1234
+  enabled: "recycle"
+  description: "memo"
+  name: "pencil2"
+  status: "signal_strength"
+  config: "clipboard"
+  cmd: "small_blue_diamond"
+  resources: "briefcase"
+  daemon: "wavy_dash"
+  code: 1234
+  error: "warning"
+  message: "memo"
+  query: "mag"
+  where: "rocket"
+  equals: "white_flower"
+  and: "star2"
+  expr: "curly_loop"
+  target: "arrow_right"
+
+profileS:
+  astrid:
+    auth_prefix: ASTRID
+    auth_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOiIxNjE2NzgxMDU4IiwiZXhwIjoiMTY0ODMxNzA1OCIsIm5iZiI6MTYxNjc4MTA1OH0.3eNv1XH_YDq_u5KFn8B79KMzXPXI1cypgjry9xKXlN4
+  guard:
+    auth_prefix: GUARD
+    auth_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOiIxNjE2NzgxMDU4IiwiZXhwIjoiMTY0ODMxNzA1OCIsIm5iZiI6MTYxNjc4MTA1OH0.4jC0t-VJwKR4e--LT-QU36hATUUbf530UL-fHj_bssE
+  astrid.cnit.os:
+    cb_manager: "http://130.251.17.128:5000"
+  guard.cnit.os:
+    cb_manager: "http://130.251.17.130:5000"
+  cnit.k8s:
+    cb_manager: "http://172.21.100.31:5000"
+  italtel.azure:
+    cb_manager: "http://guard3.westeurope.cloudapp.azure.com:5000"
+
+name: CB-Manager CLI
+help: TODO
+
+headers:
+  Authorization: "{auth_prefix} {auth_token}"
+
+endpoints:
+  exec-env:
+    title: "Execution Environments"
+    uri: "{cb_manager}/exec-env"
+    help: "List of Execution Environments."
+
+  exec-env-type:
+    title: "Execution Environment Types"
+    uri: "{cb_manager}/type/exec-env"
+    help: "List of Execution Environment Types."
+
+  network-link:
+    title: "Network Links"
+    uri: "{cb_manager}/network-link"
+    help: "List of Network Links."
+
+  network-link-type:
+    title: "Network Link Types"
+    uri: "{cb_manager}/type/network-link"
+    help: "List of Network Link Types."
+
+  connection:
+    title: "Connections"
+    uri: "{cb_manager}/connections"
+    help: "List of Connections."
+
+  agent-catalog:
+    title: "Agent Catalog"
+    uri: "{cb_manager}/catalog/agent"
+    help: "List of available Agents in the Catalog."
+
+  agent-instance:
+    title: "Agent Instances"
+    uri: "{cb_manager}/instance/agent"
+    help: "List of Agent Instances deployed in the Execution Environments."
+
+  ebpf-program-catalog:
+    title: "eBPF Program Catalog"
+    uri: "{cb_manager}/catalog/ebpf-program"
+    help: "List of available eBPF-Program in the Catalog."
+
+  ebpf-program-instance:
+    title: "eBPF Program Instances"
+    uri: "{cb_manager}/instance/ebpf-program"
+    help: "List of eBPF-Program Instances deployed in the Execution Environments."
+
+  data:
+    title: "Data"
+    uri: "{cb_manager}/data"
+    help: "List of Data records."
+
+  event:
+    title: "Events"
+    uri: "{cb_manager}/event"
+    help: "List of Event records."
