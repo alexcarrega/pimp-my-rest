@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Alex Carrega <contact@alexcarrega.com>
 # author: Alex Carrega <contact@alexcarrega.com>
 
-ago==0.0.93
+timeago==1.0.15
 bunch==1.0.1
 click==7.0
 dynaconf==3.1.4

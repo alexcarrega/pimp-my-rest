@@ -3,11 +3,12 @@
 # author: Alex Carrega <contact@alexcarrega.com>
 
 import os
+from datetime import datetime
 from re import match
 from sys import prefix
 
 import click
-from ago import human
+import timeago
 from dynaconf import Dynaconf
 from requests import get
 from rich import box
@@ -116,7 +117,7 @@ def __parse_cell(cell: any, key: str = None) -> any:
     else:
         cell = str(cell).strip()
         if match('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}', cell):
-            cell = human(DateTime.from_str(cell))
+            cell = timeago.format(DateTime.from_str(cell), datetime.utcnow())
         if not cell:
             cell = ' :no_entry_sign: empty'
         if key:

@@ -149,3 +149,18 @@ endpoints:
     title: "Events"
     uri: "{cb_manager}/event"
     help: "List of Event records."
+
+  algorithm-catalog:
+    title: "Algorthm Catalog"
+    uri: "{cb_manager}/catalog/algorithm"
+    help: "List of available Algorithms in the Catalog."
+
+  algorithm-instance:
+    title: "Algorthm Instance"
+    uri: "{cb_manager}/instance/algorithm"
+    help: "List of Algorithm instances currently deployed."
+
+  pipeline:
+    title: "Pipelines"
+    uri: "{cb_manager}/pipeline"
+    help: "List of Pipelines."
