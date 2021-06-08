@@ -72,7 +72,7 @@ icon:
   expr: "curly_loop"
   target: "arrow_right"
 
-profileS:
+profiles:
   astrid:
     auth_prefix: ASTRID
     auth_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOiIxNjE2NzgxMDU4IiwiZXhwIjoiMTY0ODMxNzA1OCIsIm5iZiI6MTYxNjc4MTA1OH0.3eNv1XH_YDq_u5KFn8B79KMzXPXI1cypgjry9xKXlN4
