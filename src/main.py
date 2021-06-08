@@ -36,10 +36,10 @@ def main(ctx, config):
 for ep, ep_data in config.endpoints.items():
     def endpoint_handler(endpoint, data):
         @main.command(name=endpoint, short_help=data.help, help=data.help)
-        @click.option('-p', '--profile', default='default', multiple=True, help='Profile to use.')
-        @click.option('-s', '--select', default=None, multiple=True, help='Select only some fields.')
-        @click.option('-w', '--where', default=None, multiple=True, help='Filter the data to get based on multiple conditions.')
-        def endpoint_cmd(profile: str = 'default', select: str = None, where: str = None):
+        @click.option('-p', '--profile', default=['default'], multiple=True, help='Profile to use.')
+        @click.option('-s', '--select', default=[], multiple=True, help='Select only some fields.')
+        @click.option('-w', '--where', default=[], multiple=True, help='Filter the data to get based on multiple conditions.')
+        def endpoint_cmd(profile: list = ['default'], select: list = [], where: list = []):
             if where:
                 body = {'where': {'and': []}}
                 for w in where:
