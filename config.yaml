@@ -117,7 +117,7 @@ endpoints:
 
   connection:
     title: "Connections"
-    uri: "{cb_manager}/connections"
+    uri: "{cb_manager}/connection"
     help: "List of Connections."
 
   agent-catalog:

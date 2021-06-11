@@ -39,7 +39,8 @@ for ep, ep_data in config.endpoints.items():
         @click.option('-p', '--profile', default=['default'], multiple=True, help='Profile to use.')
         @click.option('-s', '--select', default=[], multiple=True, help='Select only some fields.')
         @click.option('-w', '--where', default=[], multiple=True, help='Filter the data to get based on multiple conditions.')
-        def endpoint_cmd(profile: list = ['default'], select: list = [], where: list = []):
+        @click.option('-o', '--order', default=[], multiple=True, help='Order the data based on multiple fields.')
+        def endpoint_cmd(profile: list = ['default'], select: list = [], where: list = [], order: list = []):
             if where:
                 body = {'where': {'and': []}}
                 for w in where:
@@ -61,6 +62,17 @@ for ep, ep_data in config.endpoints.items():
                     body['where']['and'].append(clause)
             else:
                 body = {}
+            if order:
+                body['order'] = []
+                for o in order:
+                    mode: str = 'asc'
+                    if o.startswith('>'):
+                        mode: str = 'desc'
+                        o = o[1:]
+                    elif o.startswith('<'):
+                        o = o[1:]
+                    element: dict = {'target': o, 'mode': mode}
+                    body['order'].append(element)
             headers = config.get('headers')
             prof_data = {}
             for prof in profile:
