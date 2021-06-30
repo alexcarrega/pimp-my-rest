@@ -1,10 +1,12 @@
 # Copyright (c) 2020 Alex Carrega <contact@alexcarrega.com>
 # author: Alex Carrega <contact@alexcarrega.com>
 
-timeago==1.0.15
+braceexpand==0.1.7
 bunch==1.0.1
 click==7.0
+dpath==2.0.1
 dynaconf==3.1.4
 keyring==18.0.1
 loguru==0.5.3
 rich==9.2.0
+timeago==1.0.15

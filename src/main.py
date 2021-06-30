@@ -2,13 +2,17 @@
 # Copyright (c) 2020 Alex Carrega <contact@alexcarrega.com>
 # author: Alex Carrega <contact@alexcarrega.com>
 
+import itertools
 import os
 from datetime import datetime
+from itertools import chain
 from re import match
 from sys import prefix
 
 import click
+import dpath.util
 import timeago
+from braceexpand import braceexpand
 from dynaconf import Dynaconf
 from requests import get
 from rich import box
@@ -41,43 +45,17 @@ for ep, ep_data in config.endpoints.items():
         @click.option('-w', '--where', default=[], multiple=True, help='Filter the data to get based on multiple conditions.')
         @click.option('-o', '--order', default=[], multiple=True, help='Order the data based on multiple fields.')
         def endpoint_cmd(profile: list = ['default'], select: list = [], where: list = [], order: list = []):
-            if where:
-                body = {'where': {'and': []}}
-                for w in where:
-                    clause = {}
-                    op = clause
-                    if w.startswith('!'):
-                        w = w[1:]
-                        op = {}
-                        clause['not'] = op
-                    if match('^[^=]*=[^=]*$', w):
-                        _target, _expr = w.split('=')
-                        op['equals'] = {'target': _target, 'expr': _expr}
-                    elif match('^[^~]*~[^~]*$', w):
-                        _target, _expr = w.split('~')
-                        op['reg_exp'] = {'target': _target, 'expr': _expr}
-                    else:
-                        log.error(f':{config.icon.where}: ' + '<b>Where</b> clause <red><b>not</b></red> <b>valid</b>.')
-                        exit(1)
-                    body['where']['and'].append(clause)
-            else:
-                body = {}
-            if order:
-                body['order'] = []
-                for o in order:
-                    mode: str = 'asc'
-                    if o.startswith('>'):
-                        mode: str = 'desc'
-                        o = o[1:]
-                    elif o.startswith('<'):
-                        o = o[1:]
-                    element: dict = {'target': o, 'mode': mode}
-                    body['order'].append(element)
+            body = {}
+
+            __where(where, body)
+            __order(order, body)
+
             headers = config.get('headers')
             prof_data = {}
             for prof in profile:
                 if prof in config.profiles:
                     prof_data.update(config.profiles.get(prof).to_dict())
+
             try:
                 for k, v in headers.items():
                     headers[k] = v.format(**prof_data)
@@ -86,31 +64,67 @@ for ep, ep_data in config.endpoints.items():
                 log.error(f'Variable {key_err} not defined')
                 print(f'Error: variable {key_err} not defined')
                 exit(os.EX_CONFIG)
+
             r_json = r.json()
             if isinstance(r_json, dict):
-                table = Table(title=body.get('title', ''), show_lines=True, show_header=False,
-                              collapse_padding=True, box=box.DOUBLE_EDGE)
-                table.add_column()
-                table.add_column()
-                for k, v in r_json.items():
-                    table.add_row(__caption(k), __parse_cell(v, k))
-            else:
-                table = Table(title=body.get('title', ''), show_lines=True, box=box.DOUBLE_EDGE)
-                cols = []
-                for rec in r_json:
-                    for k in rec.keys():
-                        if (not select or k in select) and k not in cols:
-                            _stl = config.style.get(k, '')
-                            if not isinstance(_stl, str):
-                                _stl = ''
-                            table.add_column(__caption(k), style=_stl)
-                            cols.append(k)
-                    row = []
-                    for k in cols:
-                        row.append(__parse_cell(rec.get(k, ''), key=k))
-                    table.add_row(*row)
+                r_json = [r_json]
+            table = Table(title=body.get('title', ''), show_lines=True, box=box.DOUBLE_EDGE)
+
+            if not select:
+                select = list(set(chain.from_iterable(r_json)))
+
+            fields = list(itertools.chain(*map(braceexpand, select)))
+            for field in fields:
+                table.add_column(__caption(field), style=config.style.get(field, ''))
+
+            for rec in r_json:
+                row = []
+                for field in fields:
+                    val = dpath.util.values(rec, field, separator='.')
+                    if type(val) is list:
+                        if len(val) == 1:
+                            val = val[0]
+                        elif len(val) == 0:
+                            val = ''
+                    row.append(__parse_cell(val, key=field))
+                table.add_row(*row)
             console.print(table)
     endpoint_handler(endpoint=ep, data=ep_data)
+
+
+def __where(where: dict, body: dict) -> None:
+    if where:
+        body['where'] = {'and': []}
+        for w in where:
+            clause = {}
+            op = clause
+            if w.startswith('!'):
+                w = w[1:]
+                op = {}
+                clause['not'] = op
+            if match('^[^=]*=[^=]*$', w):
+                _target, _expr = w.split('=')
+                op['equals'] = {'target': _target, 'expr': _expr}
+            elif match('^[^~]*~[^~]*$', w):
+                _target, _expr = w.split('~')
+                op['reg_exp'] = {'target': _target, 'expr': _expr}
+            else:
+                log.error(f':{config.icon.where}: ' + '<b>Where</b> clause <red><b>not</b></red> <b>valid</b>.')
+                exit(1)
+            body['where']['and'].append(clause)
+
+
+def __order(order: dict, body: dict) -> None:
+    if order:
+        body['order'] = []
+        for o in order:
+            mode: str = 'asc'
+            if o.startswith('>'):
+                mode: str = 'desc'
+                o = o[1:]
+            elif o.startswith('<'):
+                o = o[1:]
+            body['order'].append({'target': o, 'mode': mode})
 
 
 def __parse_cell(cell: any, key: str = None) -> any:
@@ -142,11 +156,12 @@ def __parse_cell(cell: any, key: str = None) -> any:
 
 
 def __caption(key: str) -> str:
-    icon = config.icon.get(key, '')
-    key = key.title().replace('_', ' ')
-    if icon:
-        return f':{icon}: {key}'
-    return key
+    caption: list = []
+    for part in key.split('.'):
+        icon: str = config.icon.get(part, '')
+        o: str = (f':{icon}: ' if icon else '') + part.title().replace('_', ' ').replace('.', ' / ')
+        caption.append(o)
+    return ' / '.join(caption)
 
 
 if __name__ == '__main__':
