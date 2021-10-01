@@ -1,7 +1,5 @@
-# Copyright (c) 2020-2029 Alex Carrega <contact@alexcarrega.com>
-# author: Alex Carrega <contact@alexcarrega.com>
-
 attrs==21.2.0
+autopep8==1.5.7
 braceexpand==0.1.7
 bunch==1.0.1
 certifi==2021.5.30
@@ -28,5 +26,6 @@ pyrsistent==0.18.0
 requests==2.26.0
 rich==10.11.0
 timeago==1.0.15
+toml==0.10.2
 traitlets==5.1.0
 urllib3==1.26.7
