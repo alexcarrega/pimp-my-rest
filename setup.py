@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2020 Alex Carrega <contact@alexcarrega.com>
+# Copyright (c) 2020-2029 Alex Carrega <contact@alexcarrega.com>
 # author: Alex Carrega <contact@alexcarrega.com>
 
 # General
@@ -21,7 +21,7 @@ if path.exists(requirements_file):
 else:
     requirements = []
     console.print(f':{icons.warning}: [warning]WARNING   [/warning] Requirement :{icons.requirements}: file: [hl]{requirements_file}[/hl] ' +
-                '[warning]not[/warning] [hl]found[/hl].')
+                  '[warning]not[/warning] [hl]found[/hl].')
 
 if path.exists(readme_file):
     with open(readme_file, 'r', encoding='utf-8') as _f:

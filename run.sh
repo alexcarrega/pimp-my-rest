@@ -1,7 +1,6 @@
+#!/bin/sh
+
 # Copyright (c) 2020-2029 Alex Carrega <contact@alexcarrega.com>
 # author: Alex Carrega <contact@alexcarrega.com>
 
-debug: true
-run:
-  hide: true
-  warn: true
+python src/main.py

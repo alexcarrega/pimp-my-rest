@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2020 Alex Carrega <contact@alexcarrega.com>
+# Copyright (c) 2020-2029 Alex Carrega <contact@alexcarrega.com>
 # author: Alex Carrega <contact@alexcarrega.com>
 
 # General

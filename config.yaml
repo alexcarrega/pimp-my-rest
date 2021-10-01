@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Alex Carrega <contact@alexcarrega.com>
+# Copyright (c) 2020-2029 Alex Carrega <contact@alexcarrega.com>
 # author: "alex Carrega <contact@alexcarrega.com>
 
 style:
@@ -92,75 +92,88 @@ name: CB-Manager CLI
 help: TODO
 
 headers:
-  Authorization: "{auth_prefix} {auth_token}"
+  Authorization: "$auth_prefix $auth_token"
+
+body:
+  partner:
+    content: >-
+      {
+        "select": [],
+        "where": {
+          "equals": {
+            "target": "partner",
+            "expr": "$partner"
+          }
+        }
+      }
 
 endpoints:
   exec-env:
     title: "Execution Environments"
-    uri: "{cb_manager}/exec-env"
+    uri: "$cb_manager/exec-env"
     help: "List of Execution Environments."
 
   exec-env-type:
     title: "Execution Environment Types"
-    uri: "{cb_manager}/type/exec-env"
+    uri: "$cb_manager/type/exec-env"
     help: "List of Execution Environment Types."
 
   network-link:
     title: "Network Links"
-    uri: "{cb_manager}/network-link"
+    uri: "$cb_manager/network-link"
     help: "List of Network Links."
 
   network-link-type:
     title: "Network Link Types"
-    uri: "{cb_manager}/type/network-link"
+    uri: "$cb_manager/type/network-link"
     help: "List of Network Link Types."
 
   connection:
     title: "Connections"
-    uri: "{cb_manager}/connection"
+    uri: "$cb_manager/connection"
     help: "List of Connections."
 
   agent-catalog:
     title: "Agent Catalog"
-    uri: "{cb_manager}/catalog/agent"
+    uri: "$cb_manager/catalog/agent"
     help: "List of available Agents in the Catalog."
 
   agent-instance:
     title: "Agent Instances"
-    uri: "{cb_manager}/instance/agent"
+    uri: "$cb_manager/instance/agent"
     help: "List of Agent Instances deployed in the Execution Environments."
 
   ebpf-program-catalog:
     title: "eBPF Program Catalog"
-    uri: "{cb_manager}/catalog/ebpf-program"
+    uri: "$cb_manager/catalog/ebpf-program"
     help: "List of available eBPF-Program in the Catalog."
 
   ebpf-program-instance:
     title: "eBPF Program Instances"
-    uri: "{cb_manager}/instance/ebpf-program"
+    uri: "$cb_manager/instance/ebpf-program"
     help: "List of eBPF-Program Instances deployed in the Execution Environments."
 
   data:
     title: "Data"
-    uri: "{cb_manager}/data"
+    uri: "$cb_manager/data"
     help: "List of Data records."
 
   event:
     title: "Events"
-    uri: "{cb_manager}/event"
+    uri: "$cb_manager/event"
     help: "List of Event records."
 
   algorithm-catalog:
     title: "Algorthm Catalog"
-    uri: "{cb_manager}/catalog/algorithm"
+    uri: "$cb_manager/catalog/algorithm"
     help: "List of available Algorithms in the Catalog."
 
   algorithm-instance:
     title: "Algorthm Instance"
-    uri: "{cb_manager}/instance/algorithm"
+    uri: "$cb_manager/instance/algorithm"
     help: "List of Algorithm instances currently deployed."
 
   pipeline:
     title: "Pipelines"
-    uri: "{cb_manager}/pipeline"
+    uri: "$cb_manager/pipeline"
     help: "List of Pipelines."

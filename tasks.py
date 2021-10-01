@@ -1,5 +1,5 @@
 #!/usr/bin/env inv
-# Copyright (c) 2020 Alex Carrega <contact@alexcarrega.com>
+# Copyright (c) 2020-2029 Alex Carrega <contact@alexcarrega.com>
 # author: Alex Carrega <contact@alexcarrega.com>
 
 # General
@@ -7,6 +7,7 @@ from invoke import Responder, task
 # Local
 from src import log
 from src import utils
+
 
 @task
 def build(c):

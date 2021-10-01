@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2020 Alex Carrega <contact@alexcarrega.com>
+# Copyright (c) 2020-2029 Alex Carrega <contact@alexcarrega.com>
 # author: Alex Carrega <contact@alexcarrega.com>
 
 import itertools
@@ -7,10 +7,11 @@ import os
 from datetime import datetime
 from itertools import chain
 from re import match
+from string import Template
 from sys import prefix
 
 import click
-import dpath.util
+import jmespath
 import timeago
 from braceexpand import braceexpand
 from dynaconf import Dynaconf
@@ -31,7 +32,7 @@ CONTEXT_SETTINGS = {'help_option_names': ['-h', '--help']}
 
 
 @click.group(context_settings=CONTEXT_SETTINGS, help=f'{config.name}\n\n{config.help}')
-@click.option('-c', '--config', type=Config(), default=lambda: config, help='Configuration file.')
+@click.option('-c', '--config', type=Config(), default='config.yaml', help='Configuration file.')
 @click.pass_context
 def main(ctx, config):
     ctx.config = config
@@ -41,14 +42,14 @@ for ep, ep_data in config.endpoints.items():
     def endpoint_handler(endpoint, data):
         @main.command(name=endpoint, short_help=data.help, help=data.help)
         @click.option('-p', '--profile', default=['default'], multiple=True, help='Profile to use.')
-        @click.option('-s', '--select', default=[], multiple=True, help='Select only some fields.')
-        @click.option('-w', '--where', default=[], multiple=True, help='Filter the data to get based on multiple conditions.')
-        @click.option('-o', '--order', default=[], multiple=True, help='Order the data based on multiple fields.')
-        def endpoint_cmd(profile: list = ['default'], select: list = [], where: list = [], order: list = []):
-            body = {}
+        @click.option('-e', '--expr', default=None, multiple=False,
+                      help='Expression to filter the result (based on JMESPath).')
+        def endpoint_cmd(profile: list = ['default'], expr: str = None):
+            body = data.get('body', '')
 
-            __where(where, body)
-            __order(order, body)
+            if isinstance(body, dict) and 'template' in body:
+                body_template = config.get('body', {}).get(body.get('template')).get('content')
+                body = Template(body_template).substitute(**body)
 
             headers = config.get('headers')
             prof_data = {}
@@ -58,30 +59,36 @@ for ep, ep_data in config.endpoints.items():
 
             try:
                 for k, v in headers.items():
-                    headers[k] = v.format(**prof_data)
-                r = get(data.get('uri').format(**prof_data), headers=headers, json=body)
+                    headers[k] = Template(v).substitute(**prof_data)
+                r = get(Template(data.get('uri')).substitute(**prof_data), headers=headers, json=body)
             except KeyError as key_err:
                 log.error(f'Variable {key_err} not defined')
                 print(f'Error: variable {key_err} not defined')
                 exit(os.EX_CONFIG)
 
+            if r.status_code >= 300:
+                log.error(f'Request not correct: {r.content}')
+                exit(1)
             r_json = r.json()
+            if expr:
+                r_json = jmespath.search(expr, r_json)
             if isinstance(r_json, dict):
                 r_json = [r_json]
-            table = Table(title=body.get('title', ''), show_lines=True, box=box.DOUBLE_EDGE)
 
-            if not select:
-                select = list(set(chain.from_iterable(r_json)))
+            table = Table(title=data.get('title', ''), show_lines=True, box=box.DOUBLE_EDGE)
 
-            fields = list(itertools.chain(*map(braceexpand, select)))
+            fields = list(set(chain.from_iterable(r_json)))
+            fields = list(itertools.chain(*map(braceexpand, fields)))
             for field in fields:
                 table.add_column(__caption(field), style=config.style.get(field, ''))
 
             for rec in r_json:
                 row = []
                 for field in fields:
-                    val = dpath.util.values(rec, field, separator='.')
-                    if type(val) is list:
+                    val = rec.get(field)
+                    if val is None:
+                        val = ''
+                    elif type(val) is list:
                         if len(val) == 1:
                             val = val[0]
                         elif len(val) == 0:
@@ -90,41 +97,6 @@ for ep, ep_data in config.endpoints.items():
                 table.add_row(*row)
             console.print(table)
     endpoint_handler(endpoint=ep, data=ep_data)
-
-
-def __where(where: dict, body: dict) -> None:
-    if where:
-        body['where'] = {'and': []}
-        for w in where:
-            clause = {}
-            op = clause
-            if w.startswith('!'):
-                w = w[1:]
-                op = {}
-                clause['not'] = op
-            if match('^[^=]*=[^=]*$', w):
-                _target, _expr = w.split('=')
-                op['equals'] = {'target': _target, 'expr': _expr}
-            elif match('^[^~]*~[^~]*$', w):
-                _target, _expr = w.split('~')
-                op['reg_exp'] = {'target': _target, 'expr': _expr}
-            else:
-                log.error(f':{config.icon.where}: ' + '<b>Where</b> clause <red><b>not</b></red> <b>valid</b>.')
-                exit(1)
-            body['where']['and'].append(clause)
-
-
-def __order(order: dict, body: dict) -> None:
-    if order:
-        body['order'] = []
-        for o in order:
-            mode: str = 'asc'
-            if o.startswith('>'):
-                mode: str = 'desc'
-                o = o[1:]
-            elif o.startswith('<'):
-                o = o[1:]
-            body['order'].append({'target': o, 'mode': mode})
 
 
 def __parse_cell(cell: any, key: str = None) -> any:
