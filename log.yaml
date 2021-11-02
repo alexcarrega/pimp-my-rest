@@ -11,7 +11,7 @@ sinks:
       diagnose: True
 
   file:
-    klass: "/home/alexcarrega/.tmp/log/{name}.log"
+    klass: "/Users/alexcarrega/.tmp/log/{name}.log"
     args:
       level: "DEBUG"
       # cspell:disable
