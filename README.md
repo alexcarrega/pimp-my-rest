@@ -6,4 +6,4 @@
 [![Release](https://img.shields.io/github/v/tag/alexcarrega/pimp-my-rest?label=release&logo=github)](https://github.com/alexcarrega/pimp-my-rest/releases)
 [![Docs](https://readthedocs.org/projects/pimp-my-rest/badge/?version=latest)](https://pimp-my-rest.readthedocs.io)
 
-Simplified the managemnt and the data retrievement of REST applications.
+**Simplified** the **management** and the **data** **retrievement** of [**REST**](https://en.wikipedia.org/wiki/Representational_state_transfer) **applications**
