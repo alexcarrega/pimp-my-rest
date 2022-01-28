@@ -4,5 +4,24 @@
             "name": "Pimp My REST",
             "path": "."
         }
-    ]
+    ],
+    "settings": {
+        "cSpell.words": [
+            "autopep",
+            "braceexpand",
+            "certifi",
+            "codestyle",
+            "colorama",
+            "commonmark",
+            "idna",
+            "jmespath",
+            "mccabe",
+            "pycallgraph",
+            "pyflakes",
+            "Pygments",
+            "pylint",
+            "timeago",
+            "urllib"
+        ]
+    }
 }

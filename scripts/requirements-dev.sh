@@ -1,7 +1,6 @@
+#!/bin/bash
+
 # Copyright (c) 2020-2029 Alex Carrega <contact@alexcarrega.com>
 # author: Alex Carrega <contact@alexcarrega.com>
 
-debug: true
-run:
-  hide: true
-  warn: true
+pipenv lock -r --dev-only > dev/requirements.txt
