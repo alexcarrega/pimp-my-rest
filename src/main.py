@@ -8,7 +8,6 @@ from datetime import datetime
 from itertools import chain
 from re import match
 from string import Template
-from sys import prefix
 
 import click
 import jmespath
@@ -86,13 +85,15 @@ for ep, ep_data in config.endpoints.items():
                 row = []
                 for field in fields:
                     val = rec.get(field)
-                    if val is None:
+                    if val is not None and type(val) is list and len(val) == 1:
+                        val = val[0]
+                    elif (
+                        val is not None
+                        and type(val) is list
+                        and len(val) == 0
+                        or val is None
+                    ):
                         val = ''
-                    elif type(val) is list:
-                        if len(val) == 1:
-                            val = val[0]
-                        elif len(val) == 0:
-                            val = ''
                     row.append(__parse_cell(val, key=field))
                 table.add_row(*row)
             console.print(table)
@@ -114,7 +115,7 @@ def __parse_cell(cell: any, key: str = None) -> any:
         return table
     else:
         cell = str(cell).strip()
-        if match('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}', cell):
+        if match(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}', cell):
             cell = timeago.format(DateTime.from_str(cell), datetime.utcnow())
         if not cell:
             cell = ' :no_entry_sign: empty'
