@@ -19,7 +19,7 @@ loguru = "==0.5.3"
 requests = "==2.32.4"
 rich = "==10.11.0"
 timeago = "==1.0.15"
-urllib3 = "==1.26.19"
+urllib3 = "==2.5.0"
 Pygments = "==2.10.0"
 
 [dev-packages]
